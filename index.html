@@ -323,10 +323,6 @@
                     }
                 }
 
-                // ELIMINADO: Logs de consola
-                // console.log("Enlace original:", link);
-                // console.log("SPID extraído:", spid);
-                // console.log("Código Hexadecimal extraído:", codigoHexadecimal);
 
                 if (!spid && !codigoHexadecimal) {
                     return '<div class="sugerencia error">No se encontró SPID o código hexadecimal válido.</div>';
@@ -336,15 +332,10 @@
                     let generatedLink = match.URL;
                     let spidToUse = spid || codigoHexadecimal;
 
-                    // ELIMINADO: Logs de consola
-                    // console.log("URL base del archivo datos-info.txt:", generatedLink);
-                    // console.log("SPID a usar:", spidToUse);
 
                     // Modificación clave: Reemplaza el valor del parámetro 'spid'
                     generatedLink = generatedLink.replace(/spid=([^&]*)/, `spid=${spidToUse}`);
 
-                    // ELIMINADO: Logs de consola
-                    // console.log("Enlace generado:", generatedLink);
 
                     const suggestionTitle = totalMatches > 1 ?
                         `<h3>Sugerencia ${index + 1}</h3>` : `<h3>Sugerencia</h3>`;
@@ -390,8 +381,7 @@
                         resultadosDiv.innerHTML = '<div class="sugerencia error">No se encontraron coincidencias</div>';
                         return;
                     }
-                    //ELIMINADO: Logs de consola
-                    //console.log("Coincidencias encontradas:", coincidencias);
+
 
                     resultadosDiv.innerHTML = coincidencias
                         .map((match, index) => generarSugerencia(link, match, index, coincidencias.length))
@@ -457,7 +447,7 @@
                 inactivityTimeout = setTimeout(() => {
                     linkInput.value = '';
                     resultadosDiv.innerHTML = '';
-                }, 120000);
+                }, 30000); // AJUSTADO A 30 SEGUNDOS
             }
 
             // Event listeners
