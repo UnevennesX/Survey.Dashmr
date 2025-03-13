@@ -6,7 +6,7 @@
     <title>Survey.Dashmr</title>
     <link rel="icon" type="image/png" href="https://cdn.dribbble.com/users/7549673/screenshots/17206704/media/1210a9d0ec8af427967e735935861eeb.png?resize=400x300&vertical=center" />
     <style>
-        /* === CSS COMPLETO ACTUALIZADO CON FONDO DE CIELO SUAVE === */
+        /* (Tu CSS existente) */
         body {
             font-family: 'Roboto', sans-serif;
             display: flex;
@@ -282,105 +282,89 @@
                     .filter(entry => entry['Tipo de Survey'] === 'Survey.Dashmr');
             }
 
-         function buscarCoincidencias(link) {
-            try {
-                const url = new URL(link.startsWith('http') ? link : `https://${link}`);
-                const hostname = url.hostname.replace('www.', '');
-                const searchTerms = [
-                    hostname,
-                    hostname.split('.').slice(-2).join('.')
-                ];
+             function buscarCoincidencias(link) {
+                try {
+                    const url = new URL(link.startsWith('http') ? link : `https://${link}`);
+                    const hostname = url.hostname.replace('www.', '');
+                    const searchTerms = [
+                        hostname,
+                        hostname.split('.').slice(-2).join('.')
+                    ];
 
-                // Intenta extraer el código directamente del link (hexadecimal de 32 caracteres)
-                const spidMatch = link.match(/([a-f0-9]{32})/i);
-                const codigoEnlace = spidMatch ? spidMatch[1] : null;
+                    // Intenta extraer el código directamente del link (hexadecimal de 32 caracteres)
+                    const spidMatch = link.match(/([a-f0-9]{32})/i);
+                    const codigoEnlace = spidMatch ? spidMatch[1] : null;
 
-                // Primero, buscar coincidencias por nombre
-                const coincidenciasNombre = dataCache.filter(item => {
-                    const nombre = item.Nombre.toLowerCase();
-                    const nombreCoincide = searchTerms.some(term => nombre.includes(term.toLowerCase()));
-                    return nombreCoincide;
-                });
+                    // Primero, buscar coincidencias por nombre
+                    const coincidenciasNombre = dataCache.filter(item => {
+                        const nombre = item.Nombre.toLowerCase();
+                        const nombreCoincide = searchTerms.some(term => nombre.includes(term.toLowerCase()));
+                        return nombreCoincide;
+                    });
 
-                // Si hay coincidencias de nombre, devolverlas
-                return coincidenciasNombre;
+                    // Si hay coincidencias de nombre, devolverlas
+                    return coincidenciasNombre;
 
-            } catch (error) {
-                console.error("Error al buscar coincidencias:", error);
-                return [];
+                } catch (error) {
+                    console.error("Error al buscar coincidencias:", error);
+                    return [];
+                }
             }
-        }
-
 
             function generarSugerencia(link, match, index, totalMatches) {
-            let spid = link.match(/spid=([^&]+)/)?.[1];
-            let codigoHexadecimal;
+                let spid = link.match(/spid=([^&]+)/)?.[1];
+                let codigoHexadecimal;
 
-            // Si no se encuentra el SPID de la manera usual, buscar el código hexadecimal
-            if (!spid) {
-                const spidMatch = link.match(/([a-f0-9]{32})/i); // Busca una cadena hexadecimal de 32 caracteres
-                if (spidMatch) {
-                    codigoHexadecimal = spidMatch[1]; // Toma la coincidencia
-                }
-            }
-
-            if (!spid && !codigoHexadecimal) {
-                return '<div class="sugerencia error">No se encontró SPID o código hexadecimal válido.</div>';
-            }
-
-            try {
-                let generatedLink = match.URL;
-
-                if (match.URL.includes('xxxxx')) { //Si tiene "xxxxx" reemplaza
-                   if (spid) {
-                        generatedLink = match.URL.replace('xxxxx', spid);
-                    } else if (codigoHexadecimal) {
-                         generatedLink = match.URL.replace('xxxxx', codigoHexadecimal);
+                // Si no se encuentra el SPID de la manera usual, buscar el código hexadecimal
+                if (!spid) {
+                    const spidMatch = link.match(/([a-f0-9]{32})/i); // Busca una cadena hexadecimal de 32 caracteres
+                    if (spidMatch) {
+                        codigoHexadecimal = spidMatch[1]; // Toma la coincidencia
                     }
-
-                 } else if (match.URL.includes('xxx')) { // Si tiene "xxx" reemplaza
-                    if (spid) {
-                         generatedLink = match.URL.replace('xxx', spid);
-                     } else if (codigoHexadecimal) {
-                          generatedLink = match.URL.replace('xxx', codigoHexadecimal);
-                    }
-
-                 } else if (match.URL.endsWith('spid=')) { // Si termina con spid=, agrega el valor
-                        if (spid) {
-                            generatedLink += spid;
-                        } else if (codigoHexadecimal) {
-                            generatedLink += codigoHexadecimal;
-                        }
-
-
-                }else {
-                      if (spid || codigoHexadecimal) {
-                           generatedLink = match.URL.replace(/x/gi, ''); //Quitar todas las "x"
-                         }
                 }
 
-                const suggestionTitle = totalMatches > 1 ?
-                    `<h3>Sugerencia ${index + 1}</h3>` : `<h3>Sugerencia</h3>`;
+                console.log("Enlace original:", link);
+                console.log("SPID extraído:", spid);
+                console.log("Código Hexadecimal extraído:", codigoHexadecimal);
 
-                return `
-                    <div class="sugerencia">
-                        ${suggestionTitle}
-                        <p><strong>Tipo:</strong> ${match['Tipo de Survey']}</p>
-                        <p><strong>Nombre:</strong> ${match.Nombre}</p>
-                        <p><strong>Comentario:</strong> ${match.Comentario}</p>
-                        <p><strong>Fecha:</strong> ${match.Fecha}</p>
-                        <p><strong>Link Generado:</strong>
-                            <span class="copy-link" data-link="${generatedLink}">
-                                ${generatedLink}
-                            </span>
-                        </p>
-                    </div>
-                `;
-            } catch (error) {
-                console.error("Error al generar la sugerencia:", error);
-                return `<div class="sugerencia error">Error al generar el link: ${error}</div>`;
+                if (!spid && !codigoHexadecimal) {
+                    return '<div class="sugerencia error">No se encontró SPID o código hexadecimal válido.</div>';
+                }
+
+                try {
+                    let generatedLink = match.URL;
+                    let spidToUse = spid || codigoHexadecimal;
+
+                    console.log("URL base del archivo datos-info.txt:", generatedLink);
+                    console.log("SPID a usar:", spidToUse);
+
+                    // Modificación clave: Reemplaza el valor del parámetro 'spid'
+                    generatedLink = generatedLink.replace(/spid=([^&]*)/, `spid=${spidToUse}`);
+
+                    console.log("Enlace generado:", generatedLink);
+
+                    const suggestionTitle = totalMatches > 1 ?
+                        `<h3>Sugerencia ${index + 1}</h3>` : `<h3>Sugerencia</h3>`;
+
+                    return `
+                        <div class="sugerencia">
+                            ${suggestionTitle}
+                            <p><strong>Tipo:</strong> ${match['Tipo de Survey']}</p>
+                            <p><strong>Nombre:</strong> ${match.Nombre}</p>
+                            <p><strong>Comentario:</strong> ${match.Comentario}</p>
+                            <p><strong>Fecha:</strong> ${match.Fecha}</p>
+                            <p><strong>Link Generado:</strong>
+                                <span class="copy-link" data-link="${generatedLink}">
+                                    ${generatedLink}
+                                </span>
+                            </p>
+                        </div>
+                    `;
+                } catch (error) {
+                    console.error("Error al generar la sugerencia:", error);
+                    return `<div class="sugerencia error">Error al generar el link: ${error}</div>`;
+                }
             }
-        }
 
             // Función principal de generación
             async function generarLinks() {
@@ -403,6 +387,7 @@
                         resultadosDiv.innerHTML = '<div class="sugerencia error">No se encontraron coincidencias</div>';
                         return;
                     }
+                    console.log("Coincidencias encontradas:", coincidencias);
 
                     resultadosDiv.innerHTML = coincidencias
                         .map((match, index) => generarSugerencia(link, match, index, coincidencias.length))
@@ -492,6 +477,12 @@
                 window.open(e.target.dataset.url, '_blank');
                 infoModal.style.display = 'none';
             });
+
+            // **ELIMINADO:  Log inicial de datos**
+            // obtenerDatos().then(data => {
+            //     console.log("Datos cargados del archivo datos-info.txt:", data);
+            // });
+
         });
     </script>
 </body>
